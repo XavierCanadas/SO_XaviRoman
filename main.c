@@ -19,7 +19,7 @@ void *worker_function(void *arg) {
         char buff[256];
         crc codiComputatCRC;
 
-        // Els threads passaran fins que no hi hagi fitxers disponibles per llegir.
+        // Passa un thread perquè reservi un fitxer.
         my_sem_wait(&semafor);
 
         // El thread q ha passat executa la funció per agafar un fitxer q llegirà. Els locks es fan dintre de la funció.
