@@ -26,6 +26,7 @@ void *worker_function(void *arg) {
         int res = getAndReserveFile(&fm, &d);
 
         if (res == 0) {
+
             // es llegeix el fitxer
             read(d.fdcrc, &codiComputatCRC, sizeof(crc));
             nBytesReadData = read(d.fddata, buff, 255);
@@ -37,6 +38,7 @@ void *worker_function(void *arg) {
                 printf("\nCRC error in file %d\n", d.fddata);
                 printf("el crc ha donat %d i el fitxer hi havia %d\n", codiComputatCRC, crcLlegit);
             }
+
 
             // Després de llegir i fer les operacions del crc, es crida a unreserveFile posar-la disponible per llegir un altre bloc.
             unreserveFile(&fm, &d);

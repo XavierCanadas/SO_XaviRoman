@@ -30,8 +30,14 @@ void initialiseFdProvider(FileManager *fm, int argc, char **argv) {
         fm->fileFinished[i] = 0;
         fm->fileAvailable[i] = 1;
 
+        /*
+         * una cosa podrías poner este print aquí y después otro en markFileFinishes.
+         * Quiero ver en que orden se procesan tus .txt
+         * esto lo q hace es imprimir el codigo del archivo
+         */
+
         printf("fitxer %s, amb codi %d\n", argv[i + 1], fm->fdData[i]);
-        printf("fitxer crc %s, amb codi %d\n", path, fm->fdCRC[i]);
+        //printf("fitxer crc %s, amb codi %d\n", path, fm->fdCRC[i]);
 
 
     }
@@ -54,14 +60,18 @@ void destroyFdProvider(FileManager *fm) {
 
 // S'ha afegit un lock
 int getAndReserveFile(FileManager *fm, dataEntry *d) {
-    // This function needs to be implemented by the students
-    int i;
+
+
 
     // Fer lock perquè el thread comprovi si hi ha algun fitxer disponible.
     pthread_mutex_lock(&lock);
 
+    // This function needs to be implemented by the students
+    int i;
+
     for (i = 0; i < fm->nFilesTotal; ++i) {
         if (fm->fileAvailable[i] && !fm->fileFinished[i]) {
+
 
             d->fdcrc = fm->fdCRC[i];
             d->fddata = fm->fdData[i];
@@ -96,6 +106,7 @@ void unreserveFile(FileManager *fm, dataEntry *d) {
 void markFileAsFinished(FileManager *fm, dataEntry *d) {
     // es fa lock perquè es tocarà memòria compartida
     pthread_mutex_lock(&lock);
+    printf("fitxer amb codi %d\n", fm->fdData[d->index]);
 
     fm->fileFinished[d->index] = 1;
     fm->nFilesRemaining--; //mark that a file has finished
