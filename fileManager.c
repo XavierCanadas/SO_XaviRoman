@@ -8,6 +8,9 @@
  * Assignar memòria pels fd i altres coses.
  */
 void initialiseFdProvider(FileManager *fm, int argc, char **argv) {
+
+
+
     // Complete the initialisation
     /* Your rest of the initailisation comes here*/
     fm->nFilesTotal = argc - 1;
@@ -61,33 +64,33 @@ void destroyFdProvider(FileManager *fm) {
 // S'ha afegit un lock
 int getAndReserveFile(FileManager *fm, dataEntry *d) {
 
-
-
     // Fer lock perquè el thread comprovi si hi ha algun fitxer disponible.
     pthread_mutex_lock(&lock);
 
     // This function needs to be implemented by the students
-    int i;
+    //int i;
 
-    for (i = 0; i < fm->nFilesTotal; ++i) {
-        if (fm->fileAvailable[i] && !fm->fileFinished[i]) {
-
+    for (int i = 0; i < fm->nFilesTotal; ++i) {
+        if (fm->fileAvailable[i] == 1 && fm->fileFinished[i] == 0) {
 
             d->fdcrc = fm->fdCRC[i];
             d->fddata = fm->fdData[i];
             d->index = i;
 
             // You should mark that the file is not available
-            *fm->fileAvailable = 0;
+            fm->fileAvailable[i] = 0;
+            //printf("Fitxer %d agafat, el available %d\n", fm->fdData[i], fm->fileAvailable[i]);
 
             // Una vegada s'ha trobat el fitxer i assignat al dataEntry, es fa un unlock.
-            pthread_mutex_unlock(&lock);
+            //pthread_mutex_unlock(&lock);
+
 
             return 0;
         }
     }
     // Si no s'ha trobat cap fitxer es fa unlock.
-    pthread_mutex_unlock(&lock);
+    //pthread_mutex_unlock(&lock);
+
 
     return 1;
 }
@@ -98,7 +101,7 @@ void unreserveFile(FileManager *fm, dataEntry *d) {
 
     fm->fileAvailable[d->index] = 1;
 
-    my_sem_signal(&semafor);
+    //my_sem_signal(&semafor);
 
     pthread_mutex_unlock(&lock);
 }
@@ -106,7 +109,7 @@ void unreserveFile(FileManager *fm, dataEntry *d) {
 void markFileAsFinished(FileManager *fm, dataEntry *d) {
     // es fa lock perquè es tocarà memòria compartida
     pthread_mutex_lock(&lock);
-    printf("fitxer amb codi %d\n", fm->fdData[d->index]);
+    printf("S'ha tancat el fitxer amb codi %d\n", fm->fdData[d->index]);
 
     fm->fileFinished[d->index] = 1;
     fm->nFilesRemaining--; //mark that a file has finished
@@ -116,7 +119,7 @@ void markFileAsFinished(FileManager *fm, dataEntry *d) {
     if (fm->nFilesRemaining == 0) {
         printf("\nAll files have been processed\n");
         //TO COMPLETE: unblock all waiting threads, if needed
-
+        //my_sem_signal(&semafor);
         // el signal el fem al unreverseFile i aquest sempre s'executa abans de cridar a aquesta funció
     }
 
