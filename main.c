@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // for sleep function : waits for seconds
+#include "timer.h"
 
 FileManager fm;
 int errors = 0;
@@ -76,7 +77,6 @@ int main(int argc, char **argv) {
     my_sem_init(&semafor, 1);
 
     int N = 10;
-
     pthread_t threadID[N];
     for (int i = 0; i < N; ++i) {
         pthread_t thread;

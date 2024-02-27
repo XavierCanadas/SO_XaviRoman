@@ -77,6 +77,9 @@ int getAndReserveFile(FileManager *fm, dataEntry *d) {
             d->fddata = fm->fdData[i];
             d->index = i;
 
+            // iniciar el cronòmetre per al fitxer actual
+            startTimer(i);
+
             // You should mark that the file is not available
             fm->fileAvailable[i] = 0;
             //printf("Fitxer %d agafat, el available %d\n", fm->fdData[i], fm->fileAvailable[i]);
@@ -100,6 +103,7 @@ void unreserveFile(FileManager *fm, dataEntry *d) {
     pthread_mutex_lock(&lock);
 
     fm->fileAvailable[d->index] = 1;
+    endTimer(d->index);
 
     //my_sem_signal(&semafor);
 
