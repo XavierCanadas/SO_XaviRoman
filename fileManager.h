@@ -9,10 +9,6 @@ typedef struct {
     char *filename;
 } dataEntry;
 
-
-pthread_mutex_t lock;
-my_semaphore semafor;
-
 typedef struct {
     int *fdData;
     int *fdCRC;

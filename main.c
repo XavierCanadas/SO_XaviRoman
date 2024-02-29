@@ -12,7 +12,6 @@ FileManager fm;
 int errors = 0;
 
 pthread_mutex_t lock;
-my_semaphore semafor;
 
 
 void *worker_function(void *arg) {
@@ -75,7 +74,7 @@ int main(int argc, char **argv) {
     pthread_mutex_init(&lock, NULL);
 
     // S'inicialitza el semàfor. L'espai q es dona és del nombre de fitxers que s'ha passat.
-    my_sem_init(&semafor, 1);
+
 
     int N = 4;
     pthread_t threadID[N];

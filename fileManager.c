@@ -1,5 +1,6 @@
 #include "fileManager.h"
 
+my_semaphore semafor;
 
 /*
  * Inicialitzar mutex
@@ -20,6 +21,8 @@ void initialiseFdProvider(FileManager *fm, int argc, char **argv) {
     fm->fdCRC = malloc(sizeof(int) * fm->nFilesTotal);
     fm->fileFinished = malloc(sizeof(int) * fm->nFilesTotal);
     fm->fileAvailable = malloc(sizeof(int) * fm->nFilesTotal);
+
+    my_sem_init(&semafor, 1);
 
 
     int i;
