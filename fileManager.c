@@ -65,14 +65,15 @@ void destroyFdProvider(FileManager *fm) {
 int getAndReserveFile(FileManager *fm, dataEntry *d) {
 
     // Fer lock perquè el thread comprovi si hi ha algun fitxer disponible.
-    pthread_mutex_lock(&lock);
+    //pthread_mutex_lock(&lock);
 
     // This function needs to be implemented by the students
     //int i;
 
     for (int i = 0; i < fm->nFilesTotal; ++i) {
+        my_sem_wait(&semafor);
         if (fm->fileAvailable[i] == 1 && fm->fileFinished[i] == 0) {
-
+            //pthread_mutex_lock(&lock);
             d->fdcrc = fm->fdCRC[i];
             d->fddata = fm->fdData[i];
             d->index = i;
@@ -86,11 +87,14 @@ int getAndReserveFile(FileManager *fm, dataEntry *d) {
 
             // Una vegada s'ha trobat el fitxer i assignat al dataEntry, es fa un unlock.
             //pthread_mutex_unlock(&lock);
+            my_sem_signal(&semafor);
 
 
             return 0;
         }
+        my_sem_signal(&semafor);
     }
+
     // Si no s'ha trobat cap fitxer es fa unlock.
     //pthread_mutex_unlock(&lock);
 
@@ -100,26 +104,22 @@ int getAndReserveFile(FileManager *fm, dataEntry *d) {
 
 void unreserveFile(FileManager *fm, dataEntry *d) {
     // es fa lock perquè es tocarà memòria compartida
-    pthread_mutex_lock(&lock);
 
     fm->fileAvailable[d->index] = 1;
     endTimer(d->index);
 
     //my_sem_signal(&semafor);
-
-    pthread_mutex_unlock(&lock);
 }
 
 void markFileAsFinished(FileManager *fm, dataEntry *d) {
     // es fa lock perquè es tocarà memòria compartida
-    pthread_mutex_lock(&lock);
+    //pthread_mutex_lock(&lock);
+    my_sem_wait(&semafor);
     printf("S'ha tancat el fitxer amb codi %d\n", fm->fdData[d->index]);
 
     fm->fileFinished[d->index] = 1;
     fm->nFilesRemaining--; //mark that a file has finished
-
-
-
+    my_sem_signal(&semafor);
     if (fm->nFilesRemaining == 0) {
         printf("\nAll files have been processed\n");
         //TO COMPLETE: unblock all waiting threads, if needed
@@ -127,5 +127,5 @@ void markFileAsFinished(FileManager *fm, dataEntry *d) {
         // el signal el fem al unreverseFile i aquest sempre s'executa abans de cridar a aquesta funció
     }
 
-    pthread_mutex_unlock(&lock);
+   // pthread_mutex_unlock(&lock);
 }
