@@ -36,6 +36,14 @@ void initialiseFdProvider(FileManager *fm, int argc, char **argv) {
         fm->fileFinished[i] = 0;
         fm->fileAvailable[i] = 1;
 
+        if(fm->fdData[i] < 0){
+            printf("could not open file");
+        }
+
+        if(fm->fdCRC[i] < 0){
+            printf("could not open crc file");
+        }
+
         /*
          * una cosa podrías poner este print aquí y después otro en markFileFinishes.
          * Quiero ver en que orden se procesan tus .txt

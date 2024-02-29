@@ -36,8 +36,8 @@ void *worker_function(void *arg) {
         if (res == 0) {
             // es llegeix el fitxer
             read(d.fdcrc, &codiComputatCRC, sizeof(crc));
-            nBytesReadData = read(d.fddata, buff, 255);
-
+            int nBytesReadData = read(d.fddata, buff, 255);
+	        //printf("%d - %s\n", nBytesReadData, buff );
             crc crcLlegit = crcSlow((unsigned char* const) buff, nBytesReadData);
             //pthread_mutex_unlock(&lock);
             if (fm.fileFinished[d.index] == 0 && codiComputatCRC != crcLlegit) {
@@ -56,6 +56,7 @@ void *worker_function(void *arg) {
 
             // Si s'ha arribat al final, es marca com acabada.
             if (nBytesReadData <= 0) {
+            	
                 markFileAsFinished(&fm, &d);
             }
         }
@@ -68,7 +69,7 @@ void *worker_function(void *arg) {
 
 int main(int argc, char **argv) {
 
-
+    startTimer(0);
     initialiseFdProvider(&fm, argc, argv);
 
     pthread_mutex_init(&lock, NULL);
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
         pthread_join(threadID[i], NULL);
     }
 
-    printf("\nHi ha hagut %d errors\n\n", errors);
+    printf("\nHi ha hagut %d errors\n", errors);
 
     //pthread_mutex_destroy(&lock);
 
@@ -118,6 +119,6 @@ int main(int argc, char **argv) {
     printf("Hi ha hagut %d errors\n", errors);
      */
 
-
+    printf("time is %ld\n\n", endTimer(0));
     exit(0);
 }
