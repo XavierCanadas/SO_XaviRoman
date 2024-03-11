@@ -1,0 +1,2 @@
+gcc main.c fileLock.c crc.c -o main
+./main test.txt test.txt.crc
